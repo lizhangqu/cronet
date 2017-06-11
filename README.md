@@ -23,7 +23,7 @@ To run the sample application, simply clone this repository and use android stud
 Usage
 -----
 
-**maven**
+**Maven**
 
 ```
 <dependency>
@@ -33,20 +33,20 @@ Usage
 </dependency>
 ```
 
-**gradle**
+**Gradle**
 
 ```
 compile 'io.github.lizhangqu:cronet:0.0.1'
 ```
 
-**proguard**
+**Proguard**
 
 ```
 -keep class org.chromium.** { *;}
 -dontwarn org.chromium.**
 ```
 
-**create engine**
+**Create Engine**
 
 ```
 CronetEngine.Builder builder = new CronetEngine.Builder(context);
@@ -69,7 +69,7 @@ builder.
 CronetEngine mCronetEngine = builder.build();
 ```
 
-**send request**
+**Send Request**
 
 ```
 public void startWithURL(String url, UrlRequest.Callback callback, String postData) {
