@@ -6,7 +6,7 @@ chromium net for android is a framework that using chromium net to send network 
 Changelog
 ---------
 
-Current version 0.0.1 released on 11th June 2017
+Current version 0.0.1 released on 11th June 2017.
 
 See details in [CHANGELOG](https://github.com/lizhangqu/chromium-net-for-android/blob/master/CHANGELOG.md)
 
@@ -15,9 +15,9 @@ See details in [CHANGELOG](https://github.com/lizhangqu/chromium-net-for-android
 Examples
 --------
 
-I have provided a sample .
-See samples [here on Github](https://github.com/lizhangqu/chromium-net-for-android/tree/master/app)
-To run Sample application, simply clone the repository and use android studio to compile, install it on connected device
+I have provided a sample.
+See sample [here on Github](https://github.com/lizhangqu/chromium-net-for-android/tree/master/sample)
+To run the sample application, simply clone this repository and use android studio to compile, install it on a connected device
 
 
 Usage
