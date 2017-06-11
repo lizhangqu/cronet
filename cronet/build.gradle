@@ -18,7 +18,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    provided 'com.android.support:appcompat-v7:25.3.1'
-    provided 'com.android.support:multidex:1.0.1'
-
+    provided("com.android.support:appcompat-v7:${ANDROID_SUPPORT_VERSION}")
+    provided("com.android.support:multidex:${MULTIDEX_VERSION}")
 }
