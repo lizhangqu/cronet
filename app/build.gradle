@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion global_compileSdkVersion
-    buildToolsVersion global_buildToolsVersion
+    compileSdkVersion rootProject.ext.global_compileSdkVersion
+    buildToolsVersion rootProject.ext.global_buildToolsVersion
     defaultConfig {
         applicationId "io.github.lizhangqu.sample"
-        minSdkVersion global_minSdkVersion
-        targetSdkVersion global_targetSdkVersion
+        minSdkVersion rootProject.ext.global_minSdkVersion
+        targetSdkVersion rootProject.ext.global_targetSdkVersion
         versionCode 1
         versionName "1.0"
 

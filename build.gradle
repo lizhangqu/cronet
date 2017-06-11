@@ -3,10 +3,13 @@
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
+        mavenLocal()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
-
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath "com.github.dcendents:android-maven-gradle-plugin:1.5"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -15,16 +18,40 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        mavenCentral()
+        mavenLocal()
     }
 }
-subprojects {
-    ext.global_compileSdkVersion = COMPILE_SDK_VERSION.toInteger()
-    ext.global_buildToolsVersion = BUILD_TOOLS_VERSION
-    ext.global_minSdkVersion = MIN_SDK_VERSION.toInteger()
-    ext.global_targetSdkVersion = TARGET_SDK_VERSION.toInteger()
 
-}
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+
+ext {
+    global_compileSdkVersion = COMPILE_SDK_VERSION.toInteger()
+    global_buildToolsVersion = BUILD_TOOLS_VERSION
+    global_minSdkVersion = MIN_SDK_VERSION.toInteger()
+    global_targetSdkVersion = TARGET_SDK_VERSION.toInteger()
+    global_javaVersion = JavaVersion.VERSION_1_7
+
+
+    POM_PACKAGING = "pom"
+    POM_DESCRIPTION = "cronet"
+
+    POM_URL = "https://github.com/lizhangqu/chromium-net-for-android"
+    POM_SCM_URL = "https://github.com/lizhangqu/chromium-net-for-android.git"
+    POM_ISSUE_URL = 'https://github.com/lizhangqu/chromium-net-for-android/issues'
+
+    POM_LICENCE_NAME = "BSD License"
+    POM_LICENCE_URL = "https://opensource.org/licenses/BSD-3-Clause"
+    POM_LICENCE_DIST = "repo"
+
+    POM_DEVELOPER_ID = "区长"
+    POM_DEVELOPER_NAME = "区长"
+
+    BINTRAY_LICENCE = ['BSD 3-Clause']
+    BINTRAY_ORGANIZATION = "cronet"
+
 }
