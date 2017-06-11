@@ -39,6 +39,13 @@ Usage
 compile 'io.github.lizhangqu:cronet:0.0.1'
 ```
 
+**proguard**
+
+```
+-keep class org.chromium.** { *;}
+-dontwarn org.chromium.**
+```
+
 **create engine**
 
 ```
@@ -81,3 +88,7 @@ private void applyPostDataToUrlRequestBuilder(
     }
 }
 ```
+
+License
+--------
+chromium net for android(cronet) is under the BSD license. See the [LICENSE](https://github.com/lizhangqu/chromium-net-for-android/blob/master/LICENSE) file for details.
