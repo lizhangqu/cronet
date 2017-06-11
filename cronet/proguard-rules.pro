@@ -23,12 +23,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+#
 
--keep class org.chromium.base.** { *;}
--dontwarn org.chromium.base.**
-
--keep class org.chromium.net.** { *;}
--dontwarn org.chromium.net.**
-
--keep class org.chromium.url.** { *;}
--dontwarn org.chromium.url.**
+#-keep class org.chromium.** { *;}
+#-dontwarn org.chromium.**
