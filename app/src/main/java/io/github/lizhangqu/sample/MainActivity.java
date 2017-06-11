@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CronetUtils.getInstance().getHtml("https://fucknmb.com/", new UrlRequest.Callback() {
+                CronetUtils.getInstance().startWithURL("https://fucknmb.com/", new UrlRequest.Callback() {
                     @Override
                     public void onRedirectReceived(UrlRequest urlRequest, UrlResponseInfo urlResponseInfo, String s) throws Exception {
                         Log.e("TAG", "onRedirectReceived");
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                         super.onCanceled(request, info);
                         Log.e("TAG", "onCanceled");
                     }
-                });
+                }, "k1=v1&k2=v2");
             }
         });
     }

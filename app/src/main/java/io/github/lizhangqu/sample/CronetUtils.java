@@ -21,10 +21,9 @@ import java.util.concurrent.Executors;
  * @date: 2017-06-11 17:24
  */
 public class CronetUtils {
-    private static final String TAG = "CronetUtils";
     private static CronetUtils sInstance;
     private CronetEngine mCronetEngine;
-    private Executor mExecutor = Executors.newCachedThreadPool();
+    private Executor mExecutor = Executors.newFixedThreadPool(4);
 
     private CronetUtils() {
     }
@@ -63,13 +62,13 @@ public class CronetUtils {
         startWithURL(url, callback);
     }
 
-    private void startWithURL(String url, UrlRequest.Callback callback) {
+    public void startWithURL(String url, UrlRequest.Callback callback) {
         startWithURL(url, callback, null);
     }
 
-    private void startWithURL(String url, UrlRequest.Callback callback, String postData) {
+    public void startWithURL(String url, UrlRequest.Callback callback, String postData) {
         UrlRequest.Builder builder = new UrlRequest.Builder(url, callback, mExecutor, mCronetEngine);
-//        applyPostDataToUrlRequestBuilder(builder, mExecutor, postData);
+        applyPostDataToUrlRequestBuilder(builder, mExecutor, postData);
         builder.build().start();
     }
 
