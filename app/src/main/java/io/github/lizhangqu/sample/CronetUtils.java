@@ -1,11 +1,17 @@
 package io.github.lizhangqu.sample;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.chromium.net.CronetEngine;
+import org.chromium.net.HostResolver;
 import org.chromium.net.UploadDataProviders;
 import org.chromium.net.UrlRequest;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -23,7 +29,7 @@ public class CronetUtils {
     private CronetUtils() {
     }
 
-    public static synchronized CronetUtils getsInstance() {
+    public static synchronized CronetUtils getInstance() {
         if (sInstance == null) {
             sInstance = new CronetUtils();
         }
@@ -38,6 +44,15 @@ public class CronetUtils {
                             100 * 1024)
                     .enableHttp2(true)
                     .enableQuic(true)
+                    .setHostResolver(new HostResolver() {
+                        @Override
+                        public List<InetAddress> resolve(String hostname) throws UnknownHostException {
+                            Log.e("TAG", "HostResolver resolve");
+                            if (hostname == null)
+                                throw new UnknownHostException("hostname == null");
+                            return Arrays.asList(InetAddress.getAllByName(hostname));
+                        }
+                    })
                     .enableSDCH(true)
                     .setLibraryName("cronet");
             mCronetEngine = builder.build();

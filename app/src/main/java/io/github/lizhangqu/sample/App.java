@@ -19,6 +19,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        CronetUtils.getsInstance().init(getApplicationContext());
+        CronetUtils.getInstance().init(getApplicationContext());
     }
 }
