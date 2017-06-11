@@ -1,68 +1,33 @@
 package io.github.lizhangqu.sample;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-
-import org.chromium.net.UrlRequest;
-import org.chromium.net.UrlRequestException;
-import org.chromium.net.UrlResponseInfo;
-
-import java.nio.ByteBuffer;
+import android.widget.Button;
+import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
+    private Button mBtnSend;
+    private EditText mEditTextUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
+        mEditTextUrl = (EditText) findViewById(R.id.url);
+        mBtnSend = (Button) findViewById(R.id.send);
+        mBtnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CronetUtils.getInstance().startWithURL("https://fucknmb.com/", new UrlRequest.Callback() {
-                    @Override
-                    public void onRedirectReceived(UrlRequest urlRequest, UrlResponseInfo urlResponseInfo, String s) throws Exception {
-                        Log.e("TAG", "onRedirectReceived");
-                        urlRequest.followRedirect();
-
-                    }
-
-                    @Override
-                    public void onResponseStarted(UrlRequest urlRequest, UrlResponseInfo urlResponseInfo) throws Exception {
-                        Log.e("TAG", "onResponseStarted");
-                        Log.e("TAG", "urlResponseInfo getUrl:" + urlResponseInfo.getUrl());
-                        Log.e("TAG", "urlResponseInfo getProxyServer:" + urlResponseInfo.getProxyServer());
-                        Log.e("TAG", "urlResponseInfo getHttpStatusText:" + urlResponseInfo.getHttpStatusText());
-                        Log.e("TAG", "urlResponseInfo getNegotiatedProtocol:" + urlResponseInfo.getNegotiatedProtocol());
-                        Log.e("TAG", "urlResponseInfo getAllHeaders:" + urlResponseInfo.getAllHeaders());
-                        Log.e("TAG", "urlResponseInfo getReceivedBytesCount:" + urlResponseInfo.getReceivedBytesCount());
-                        Log.e("TAG", "urlResponseInfo getUrlChain:" + urlResponseInfo.getUrlChain());
-
-                    }
-
-                    @Override
-                    public void onReadCompleted(UrlRequest urlRequest, UrlResponseInfo urlResponseInfo, ByteBuffer byteBuffer) throws Exception {
-                        Log.e("TAG", "onReadCompleted");
-                    }
-
-                    @Override
-                    public void onSucceeded(UrlRequest urlRequest, UrlResponseInfo urlResponseInfo) {
-                        Log.e("TAG", "onSucceeded");
-                    }
-
-                    @Override
-                    public void onFailed(UrlRequest urlRequest, UrlResponseInfo urlResponseInfo, UrlRequestException e) {
-                        Log.e("TAG", "onFailed");
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onCanceled(UrlRequest request, UrlResponseInfo info) {
-                        super.onCanceled(request, info);
-                        Log.e("TAG", "onCanceled");
-                    }
-                }, "k1=v1&k2=v2");
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.addCategory("io.github.lizhangqu.WEBVIEW");
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setData(Uri.parse(mEditTextUrl.getText().toString()));
+                startActivity(intent);
             }
         });
     }

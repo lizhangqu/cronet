@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Chromium-For-Andorid</string>
+    <string name="app_name">chromium-net-for-android</string>
+    <string name="urlText">Enter a URL</string>
+    <string name="postText">Enter post data (leave it blank for GET request)</string>
 </resources>
