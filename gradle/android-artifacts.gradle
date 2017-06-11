@@ -7,12 +7,15 @@ android {
         targetCompatibility rootProject.ext.global_javaVersion
     }
 }
+
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom.project {
             name POM_NAME
+            groupId = POM_GROUP
             artifactId POM_ARTIFACT_ID
+            version = POM_VERSION
             packaging POM_PACKAGING
             description POM_DESCRIPTION
             url POM_URL
@@ -61,18 +64,23 @@ artifacts {
     archives androidJavadocsJar
 }
 
-//for local maven test
+
 afterEvaluate { project ->
     tasks.all { Task task ->
+        //for local maven test
         if (task.name.equalsIgnoreCase('publishCronetPublicationToMavenLocal')) {
             task.dependsOn tasks.getByName('assemble')
+        }
+        //for bintrayUpload
+        if (task.name.equalsIgnoreCase('bintrayUpload')) {
+            task.dependsOn tasks.getByName('install')
         }
     }
 }
 
 publishing {
     publications {
-        Cronet(MavenPublication) {
+        cronet(MavenPublication) {
             groupId = POM_GROUP
             artifactId = POM_ARTIFACT_ID
             version = POM_VERSION
@@ -84,5 +92,5 @@ publishing {
 }
 
 task buildAndPublishCronetToLocalMaven(dependsOn: ['build', 'publishCronetPublicationToMavenLocal']) {
-    group = 'cronet'
+    group = 'publishing'
 }
