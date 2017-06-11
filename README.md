@@ -24,7 +24,7 @@ Chromium Net Source
 -------
 I have copied part of source from [chromium/src/net](https://chromium.googlesource.com/chromium/src/net/+/master).
 
-See source [here on Github](https://github.com/lizhangqu/cronet-source/tree/master/sample).
+See source [here on Github](https://github.com/lizhangqu/chromium-net-for-android/tree/master/cronet-source).
 
 It's just for viewing the chromium net code more convenient. And it can't be compiled.
 
