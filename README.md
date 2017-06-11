@@ -1,6 +1,29 @@
-### chromium net for android
+chromium net for android is a framework that using chromium net to send network request
+====================================
 
-mavan
+[ ![Download](https://api.bintray.com/packages/lizhangqu/maven/io.github.lizhangqu:cronet/images/download.svg) ](https://bintray.com/lizhangqu/maven/io.github.lizhangqu:cronet/_latestVersion)
+
+Changelog
+---------
+
+Current version 0.0.1 released on 11th June 2017
+
+See details in [CHANGELOG](https://github.com/lizhangqu/chromium-net-for-android/blob/master/CHANGELOG.md)
+
+
+
+Examples
+--------
+
+I have provided a sample .
+See samples [here on Github](https://github.com/lizhangqu/chromium-net-for-android/tree/master/app)
+To run Sample application, simply clone the repository and use android studio to compile, install it on connected device
+
+
+Usage
+-----
+
+**maven**
 
 ```
 <dependency>
@@ -10,13 +33,13 @@ mavan
 </dependency>
 ```
 
-gradle
+**gradle**
 
 ```
 compile 'io.github.lizhangqu:cronet:0.0.1'
 ```
 
-create CronetEngine
+**create engine**
 
 ```
 CronetEngine.Builder builder = new CronetEngine.Builder(context);
@@ -39,7 +62,7 @@ builder.
 CronetEngine mCronetEngine = builder.build();
 ```
 
-start request
+**send request**
 
 ```
 public void startWithURL(String url, UrlRequest.Callback callback, String postData) {
