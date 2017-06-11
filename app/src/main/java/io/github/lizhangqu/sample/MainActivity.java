@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CronetUtils.getsInstance().getHtml("https://fucknmb.com/", new UrlRequest.Callback() {
+                CronetUtils.getInstance().getHtml("https://fucknmb.com/", new UrlRequest.Callback() {
                     @Override
                     public void onRedirectReceived(UrlRequest urlRequest, UrlResponseInfo urlResponseInfo, String s) throws Exception {
                         Log.e("TAG", "onRedirectReceived");
@@ -55,6 +55,12 @@ public class MainActivity extends AppCompatActivity {
                     public void onFailed(UrlRequest urlRequest, UrlResponseInfo urlResponseInfo, UrlRequestException e) {
                         Log.e("TAG", "onFailed");
                         e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onCanceled(UrlRequest request, UrlResponseInfo info) {
+                        super.onCanceled(request, info);
+                        Log.e("TAG", "onCanceled");
                     }
                 });
             }
