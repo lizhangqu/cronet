@@ -103,7 +103,6 @@ bintray {
 
     pkg {
         repo = 'maven'
-        userOrg = BINTRAY_ORGANIZATION
         name = "${POM_GROUP}:${POM_ARTIFACT_ID}"
         licenses = BINTRAY_LICENCE
         vcsUrl = POM_SCM_URL
