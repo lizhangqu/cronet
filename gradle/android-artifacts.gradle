@@ -7,9 +7,6 @@ android {
         targetCompatibility rootProject.ext.global_javaVersion
     }
 }
-version = POM_VERSION
-group = POM_GROUP
-
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
@@ -67,7 +64,7 @@ artifacts {
 //for local maven test
 afterEvaluate { project ->
     tasks.all { Task task ->
-        if (task.name.equalsIgnoreCase('publishCronetToMavenLocal')) {
+        if (task.name.equalsIgnoreCase('publishCronetPublicationToMavenLocal')) {
             task.dependsOn tasks.getByName('assemble')
         }
     }
@@ -86,6 +83,6 @@ publishing {
     }
 }
 
-task buildAndPublishCronetToLocalMaven(dependsOn: ['build', 'publishCronetToMavenLocal']) {
+task buildAndPublishCronetToLocalMaven(dependsOn: ['build', 'publishCronetPublicationToMavenLocal']) {
     group = 'cronet'
 }
