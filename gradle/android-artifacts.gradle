@@ -8,6 +8,9 @@ android {
     }
 }
 
+version = POM_VERSION
+group = POM_GROUP
+
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
