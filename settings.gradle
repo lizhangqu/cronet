@@ -1,1 +1,3 @@
-include ':sample', ':cronet'
+include ':sample'
+include ':cronet'
+include ':cronet-source'
