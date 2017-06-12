@@ -28,6 +28,12 @@ See source [here on Github](https://github.com/lizhangqu/chromium-net-for-androi
 
 It's just for viewing the chromium net code more convenient. And it can't be compiled.
 
+Feature
+---------
+
+ - Full platform supports the latest version of TLS.
+ - The platform supports the latest network protocols such as HTTP / 2 and QUIC.
+
 Usage
 -----
 
