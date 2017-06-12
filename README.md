@@ -54,7 +54,7 @@ compile 'io.github.lizhangqu:cronet:0.0.1'
 -dontwarn org.chromium.**
 ```
 
-**NDK ABIFilters**
+**NDK abiFilters**
 
 This library add all so default, if you need add only one, you should use ndk abiFilters yourself.
 
