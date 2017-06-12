@@ -64,14 +64,16 @@ I suggest that you only add **abiFilters "armeabi-v7a"**.
 android {
     defaultConfig {
         ndk {
-            abiFilters "armeabi"
+            abiFilters "armeabi-v7a"
+            
+//          default is no filters       
+//          abiFilters "armeabi"
 //          abiFilters "armeabi-v7a"
 //          abiFilters "arm64-v8a"
 //          abiFilters "x86"
 //          abiFilters "x86_64"
 //          abiFilters "mips"
 //          abiFilters "mips64"
-//          default is no filters
         }
     }
 }
