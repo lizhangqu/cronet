@@ -34,4 +34,13 @@
         android:textAllCaps="false"
         />
 
+    <Button
+        android:id="@+id/easy_cronet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="easy_cronet"
+        android:textAllCaps="false"
+        />
+
+
 </LinearLayout>
