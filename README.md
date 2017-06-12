@@ -33,6 +33,7 @@ Feature
 
  - Full platform supports the latest version of TLS.
  - The platform supports the latest network protocols such as HTTP / 2 and QUIC.
+ - This Library compiled without FTP, WebSocket support, if you need to use you'd better compile it yourself.
 
 Usage
 -----
@@ -259,6 +260,14 @@ private void applyPostDataToUrlRequestBuilder(
 ```
 
 And then reuse the callback in **Send GET Request**
+
+Thanks
+-------
+
+ - [chromium-net-android-porting](http://hanpfei.github.io/2016/10/18/chromium-net-android-porting/)
+ - [chromium-compile-guide-for-android](http://hanpfei.github.io/2016/10/16/Chromium_Android%E7%BC%96%E8%AF%91%E6%8C%87%E5%8D%97/)
+ - [lazy-chromium-net-android-porting-guide](http://hanpfei.github.io/2016/11/11/lazy-chromium-net-android-porting-guide/)
+ - [chromium-gn-build-tools](http://hanpfei.github.io/2016/11/16/ChromiumGN%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E7%9A%84%E4%BD%BF%E7%94%A8/)
 
 License
 --------
