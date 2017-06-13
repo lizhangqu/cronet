@@ -26,19 +26,19 @@ def readPropertyFromLocalProperties(String key) {
 }
 
 def getReleaseRepositoryUsername() {
-    return hasProperty('RELEASE_REPOSITORY_USERNAME') ? REPOSITORY_USERNAME : readPropertyFromLocalProperties('RELEASE_REPOSITORY_USERNAME')
+    return hasProperty('RELEASE_REPOSITORY_USERNAME') ? RELEASE_REPOSITORY_USERNAME : readPropertyFromLocalProperties('RELEASE_REPOSITORY_USERNAME')
 }
 
 def getReleaseRepositoryPassword() {
-    return hasProperty('RELEASE_REPOSITORY_PASSWORD') ? REPOSITORY_PASSWORD : readPropertyFromLocalProperties('RELEASE_REPOSITORY_PASSWORD')
+    return hasProperty('RELEASE_REPOSITORY_PASSWORD') ? RELEASE_REPOSITORY_PASSWORD : readPropertyFromLocalProperties('RELEASE_REPOSITORY_PASSWORD')
 }
 
 def getSnapshotRepositoryUsername() {
-    return hasProperty('SNAPSHOT_REPOSITORY_USERNAME') ? REPOSITORY_USERNAME : readPropertyFromLocalProperties('SNAPSHOT_REPOSITORY_USERNAME')
+    return hasProperty('SNAPSHOT_REPOSITORY_USERNAME') ? SNAPSHOT_REPOSITORY_USERNAME : readPropertyFromLocalProperties('SNAPSHOT_REPOSITORY_USERNAME')
 }
 
 def getSnapshotRepositoryPassword() {
-    return hasProperty('SNAPSHOT_REPOSITORY_PASSWORD') ? REPOSITORY_PASSWORD : readPropertyFromLocalProperties('SNAPSHOT_REPOSITORY_PASSWORD')
+    return hasProperty('SNAPSHOT_REPOSITORY_PASSWORD') ? SNAPSHOT_REPOSITORY_PASSWORD : readPropertyFromLocalProperties('SNAPSHOT_REPOSITORY_PASSWORD')
 }
 
 
