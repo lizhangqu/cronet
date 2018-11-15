@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/lizhangqu/AndroidStudioProjects/chromium-net-for-android/cronet-source/src/main/assets"/><source path="/Users/lizhangqu/AndroidStudioProjects/chromium-net-for-android/cronet-source/build/generated/assets/shaders/debug"/></dataSet><dataSet config="debug"><source path="/Users/lizhangqu/AndroidStudioProjects/chromium-net-for-android/cronet-source/src/debug/assets"/></dataSet></merger>
