@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="io.github.lizhangqu.cronetsample.MainActivity">
+
+    <EditText
+        android:id="@+id/url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="https://www.baidu.com" />
+
+    <Button
+        android:id="@+id/start_request"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="开始请求" />
+
+    <Button
+        android:id="@+id/start_log"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="开始记录日志" />
+
+    <Button
+        android:id="@+id/stop_log"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="结束记录日志" />
+
+    <Button
+        android:id="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="HEAD请求" />
+
+    <TextView
+        android:id="@+id/resultView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/dataView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

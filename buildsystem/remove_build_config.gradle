@@ -1,0 +1,8 @@
+afterEvaluate {
+    def tasksToDisable = tasks.findAll {
+        return it.name.endsWith('BuildConfig')  // causes unwanted BuildConfig.java
+    }
+    tasksToDisable.each { Task task ->
+        task.enabled = false
+    }
+}

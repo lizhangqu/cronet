@@ -1,0 +1,51 @@
+apply plugin: 'com.android.library'
+apply from: project.rootProject.file('buildsystem/remove_build_config.gradle')
+apply plugin: 'android.publish'
+
+android {
+    compileSdkVersion rootProject.ext.global_compileSdkVersion
+    buildToolsVersion rootProject.ext.global_buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.global_minSdkVersion
+        targetSdkVersion rootProject.ext.global_targetSdkVersion
+        consumerProguardFiles project.file("consumer-proguard-rules.pro")
+    }
+
+    compileOptions {
+        sourceCompatibility rootProject.ext.global_javaVersion
+        targetCompatibility rootProject.ext.global_javaVersion
+    }
+
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly 'com.android.support:support-annotations:28.0.0'
+    compileOnly 'com.android.support:support-v4:28.0.0'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation project(':cronet-api')
+    implementation project(':cronet-common')
+
+    //apt
+    annotationProcessor project(':cronet-processor')
+    compileOnly 'javax.annotation:jsr250-api:1.0'
+}
+
+
+if (enableErrorprone?.toBoolean()) {
+    apply from: project.rootProject.file('buildsystem/errorprone.gradle')
+}

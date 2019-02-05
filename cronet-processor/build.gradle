@@ -1,0 +1,17 @@
+apply plugin: 'java'
+apply plugin: 'android.publish'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.squareup:javapoet:1.11.1'
+    implementation 'com.google.guava:guava:23.0'
+    implementation 'com.google.auto.service:auto-service:1.0-rc4'
+}
+
+if (enableErrorprone?.toBoolean()) {
+    apply from: project.rootProject.file('buildsystem/errorprone.gradle')
+}

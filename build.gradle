@@ -2,27 +2,62 @@
 
 buildscript {
     repositories {
-        jcenter()
-        mavenCentral()
-        mavenLocal()
+        maven {
+            url 'https://maven.aliyun.com/repository/public'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/central'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/gradle-plugin'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/google'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/jcenter'
+        }
+        maven {
+            url 'https://dl.google.com/dl/android/maven2/'
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath "com.github.dcendents:android-maven-gradle-plugin:1.5"
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'io.github.lizhangqu:core-publish:1.3.9'
+//        classpath "net.ltgt.gradle:gradle-errorprone-plugin:0.7"
+    }
+    configurations.all {
+        it.resolutionStrategy.cacheDynamicVersionsFor(5, 'minutes')
+        it.resolutionStrategy.cacheChangingModulesFor(0, 'seconds')
     }
 }
 
 allprojects {
     repositories {
-        jcenter()
-        mavenCentral()
-        mavenLocal()
+        maven {
+            url 'https://maven.aliyun.com/repository/public'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/central'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/gradle-plugin'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/google'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/jcenter'
+        }
+        maven {
+            url 'https://dl.google.com/dl/android/maven2/'
+        }
+    }
+    configurations.all {
+        it.resolutionStrategy.cacheDynamicVersionsFor(5, 'minutes')
+        it.resolutionStrategy.cacheChangingModulesFor(0, 'seconds')
     }
 }
-
 
 task clean(type: Delete) {
     delete rootProject.buildDir
@@ -30,28 +65,308 @@ task clean(type: Delete) {
 
 
 ext {
-    global_compileSdkVersion = COMPILE_SDK_VERSION.toInteger()
-    global_buildToolsVersion = BUILD_TOOLS_VERSION
-    global_minSdkVersion = MIN_SDK_VERSION.toInteger()
-    global_targetSdkVersion = TARGET_SDK_VERSION.toInteger()
+    global_compileSdkVersion = 28
+    global_buildToolsVersion = "28.0.3"
+    global_minSdkVersion = 16
+    global_targetSdkVersion = 28
     global_javaVersion = JavaVersion.VERSION_1_7
+}
 
 
-    POM_PACKAGING = "pom"
-    POM_DESCRIPTION = "cronet"
+void writeProperties(File file, String key, version) {
+    try {
+        // we use replace here as other ant tasks escape and modify the whole file
+        project.ant.replaceregexp(file: file, byline: true) {
+            regexp(pattern: "^(\\s*)$key((\\s*[=|:]\\s*)|(\\s+)).+\$")
+            substitution(expression: "\\1$key\\2$version")
+        }
+    } catch (Exception e) {
+    }
+}
 
-    POM_URL = "https://github.com/lizhangqu/chromium-net-for-android"
-    POM_SCM_URL = "https://github.com/lizhangqu/chromium-net-for-android.git"
-    POM_ISSUE_URL = 'https://github.com/lizhangqu/chromium-net-for-android/issues'
+void releaseFiles(boolean fromSrc) {
+    File preBuiltDir = new File(project.rootDir, "prebuilt")
+    File apiDestDir = new File(project.rootDir, "cronet-api${File.separator}src${File.separator}main${File.separator}java")
+    File commonDestDir = new File(project.rootDir, "cronet-common${File.separator}src${File.separator}main${File.separator}java")
+    File nativeDestDir = new File(project.rootDir, "cronet-native${File.separator}src${File.separator}main${File.separator}java")
+    File platformDestDir = new File(project.rootDir, "cronet-platform${File.separator}src${File.separator}main${File.separator}java")
+    File processorDestDir = new File(project.rootDir, "cronet-processor${File.separator}src${File.separator}main${File.separator}java")
 
-    POM_LICENCE_NAME = "BSD License"
-    POM_LICENCE_URL = "https://opensource.org/licenses/BSD-3-Clause"
-    POM_LICENCE_DIST = "repo"
+    File apiJarDestFile = new File(project.rootDir, "cronet-api${File.separator}libs${File.separator}cronet_api.jar")
+    File commonJarDestFile = new File(project.rootDir, "cronet-common${File.separator}libs${File.separator}cronet_impl_common_java.jar")
+    File nativeJarDestFile = new File(project.rootDir, "cronet-native${File.separator}libs${File.separator}cronet_impl_native_java.jar")
+    File platformJarDestFile = new File(project.rootDir, "cronet-platform${File.separator}libs${File.separator}cronet_impl_platform_java.jar")
 
-    POM_DEVELOPER_ID = "区长"
-    POM_DEVELOPER_NAME = "区长"
+    //==================================================java=========================================================
+    if (fromSrc) {
+        GFileUtils.deleteQuietly(apiJarDestFile)
+        GFileUtils.deleteQuietly(apiDestDir)
+        GFileUtils.mkdirs(apiDestDir)
+        File apiSrcFile = new File(preBuiltDir, "cronet_api-src.jar")
 
-    BINTRAY_LICENCE = ['BSD 3-Clause']
-    BINTRAY_ORGANIZATION = "cronet"
+        project.logger.error "releasePreBuilt ${apiSrcFile}"
+        project.zipTree(apiSrcFile).visit { def visit ->
+            File file = visit.getFile()
+            String path = visit.getRelativePath()
+            if (path.startsWith("android${File.separator}")
+                    || path.contains("${File.separator}library_loader${File.separator}")
+                    || path.contains("${File.separator}multidex${File.separator}")
+                    || path.contains("${File.separator}process_launcher${File.separator}")
+                    || path.endsWith("${File.separator}SysUtils.java")
+                    || path.contains("${File.separator}CachedMetrics")
+                    || path.contains("${File.separator}MemoryPressureMonitor")) {
+                project.logger.error "exclude ${path}"
+                return
+            }
+            GFileUtils.copyFile(file, new File(apiDestDir, path))
+            project.logger.error "copy ${path} to cronet-api"
+        }
 
+
+        GFileUtils.deleteQuietly(commonJarDestFile)
+        GFileUtils.deleteQuietly(commonDestDir)
+        GFileUtils.mkdirs(commonDestDir)
+        File commonSrcFile = new File(preBuiltDir, "cronet_impl_common_java-src.jar")
+
+        project.logger.error "releasePreBuilt ${commonSrcFile}"
+        project.zipTree(commonSrcFile).visit { def visit ->
+            File file = visit.getFile()
+            String path = visit.getRelativePath()
+            if (path.startsWith("android${File.separator}")
+                    || path.contains("${File.separator}library_loader${File.separator}")
+                    || path.contains("${File.separator}multidex${File.separator}")
+                    || path.contains("${File.separator}process_launcher${File.separator}")
+                    || path.endsWith("${File.separator}SysUtils.java")
+                    || path.contains("${File.separator}CachedMetrics")
+                    || path.contains("${File.separator}MemoryPressureMonitor")) {
+                project.logger.error "exclude ${path}"
+                return
+            }
+            GFileUtils.copyFile(file, new File(commonDestDir, path))
+            project.logger.error "copy ${path} to cronet-common"
+        }
+
+        GFileUtils.deleteQuietly(platformJarDestFile)
+        GFileUtils.deleteQuietly(platformDestDir)
+        GFileUtils.mkdirs(platformDestDir)
+        File platformSrcFile = new File(preBuiltDir, "cronet_impl_platform_java-src.jar")
+
+        project.logger.error "releasePreBuilt ${platformSrcFile}"
+        project.zipTree(platformSrcFile).visit { def visit ->
+            File file = visit.getFile()
+            String path = visit.getRelativePath()
+            if (path.startsWith("android${File.separator}")
+                    || path.contains("${File.separator}library_loader${File.separator}")
+                    || path.contains("${File.separator}multidex${File.separator}")
+                    || path.contains("${File.separator}process_launcher${File.separator}")
+                    || path.endsWith("${File.separator}SysUtils.java")
+                    || path.contains("${File.separator}CachedMetrics")
+                    || path.contains("${File.separator}MemoryPressureMonitor")) {
+                project.logger.error "exclude ${path}"
+                return
+            }
+            GFileUtils.copyFile(file, new File(platformDestDir, path))
+            project.logger.error "copy ${path} to cronet-platform"
+        }
+
+        GFileUtils.deleteQuietly(nativeJarDestFile)
+        GFileUtils.deleteQuietly(nativeDestDir)
+        GFileUtils.mkdirs(nativeDestDir)
+        File nativeSrcFile = new File(preBuiltDir, "cronet_impl_native_java-src.jar")
+
+        project.logger.error "releasePreBuilt ${nativeSrcFile}"
+        project.zipTree(nativeSrcFile).visit { def visit ->
+            File file = visit.getFile()
+            String path = visit.getRelativePath()
+            if (path.startsWith("android${File.separator}")
+                    || path.contains("${File.separator}library_loader${File.separator}")
+                    || path.contains("${File.separator}multidex${File.separator}")
+                    || path.contains("${File.separator}process_launcher${File.separator}")
+                    || path.endsWith("${File.separator}SysUtils.java")
+                    || path.contains("${File.separator}CachedMetrics")
+                    || path.contains("${File.separator}MemoryPressureMonitor")) {
+                project.logger.error "exclude ${path}"
+                return
+            }
+
+            if (path.contains("org${File.separator}chromium${File.separator}jni_generator")) {
+                project.logger.error "exclude annotationProcessor ${path}"
+                return
+            }
+
+            if (path.contains("J${File.separator}N")) {
+                project.logger.error "exclude annotationProcessor J.N ${path}"
+                return
+            }
+
+            GFileUtils.copyFile(file, new File(nativeDestDir, path))
+            project.logger.error "copy ${path} to cronet-native"
+        }
+
+        GFileUtils.deleteQuietly(processorDestDir)
+        GFileUtils.mkdirs(processorDestDir)
+        File processorSrcFile = new File(preBuiltDir, "cronet_impl_native_java-src.jar")
+
+        project.logger.error "releasePreBuilt ${processorSrcFile}"
+        project.zipTree(processorSrcFile).visit { def visit ->
+            File file = visit.getFile()
+            String path = visit.getRelativePath()
+
+            boolean shouldCopy = false
+            if (path.contains("org${File.separator}chromium${File.separator}jni_generator")) {
+                shouldCopy = true
+            }
+            if (path.contains("org${File.separator}chromium${File.separator}base${File.separator}annotations${File.separator}NativeMethods")) {
+                shouldCopy = true
+            }
+            if (path.contains("org${File.separator}chromium${File.separator}base${File.separator}JniStaticTestMocker")) {
+                shouldCopy = true
+            }
+
+            if (!shouldCopy) {
+                project.logger.error "exclude not annotationProcessor ${path}"
+                return
+            }
+
+            GFileUtils.copyFile(file, new File(processorDestDir, path))
+            project.logger.error "copy ${path} to cronet-processor"
+        }
+    } else {
+        GFileUtils.deleteQuietly(apiDestDir)
+        GFileUtils.deleteQuietly(commonDestDir)
+        GFileUtils.deleteQuietly(platformDestDir)
+        GFileUtils.deleteQuietly(nativeDestDir)
+
+        File apiJarSrcFile = new File(preBuiltDir, "cronet_api.jar")
+        File commonJarSrcFile = new File(preBuiltDir, "cronet_impl_common_java.jar")
+        File nativeJarSrcFile = new File(preBuiltDir, "cronet_impl_native_java.jar")
+        File platformJarSrcFile = new File(preBuiltDir, "cronet_impl_platform_java.jar")
+
+        GFileUtils.copyFile(apiJarSrcFile, apiJarDestFile)
+        project.logger.error "copy ${apiJarSrcFile} to ${apiJarDestFile}"
+        GFileUtils.copyFile(commonJarSrcFile, commonJarDestFile)
+        project.logger.error "copy ${commonJarSrcFile} to ${commonJarDestFile}"
+        GFileUtils.copyFile(nativeJarSrcFile, nativeJarDestFile)
+        project.logger.error "copy ${nativeJarSrcFile} to ${nativeJarDestFile}"
+        GFileUtils.copyFile(platformJarSrcFile, platformJarDestFile)
+        project.logger.error "copy ${platformJarSrcFile} to ${platformJarDestFile}"
+    }
+    //==================================================proguard=========================================================
+    File commonProguardSrcFile = new File(preBuiltDir, "cronet_impl_common_proguard.cfg")
+    File commonProguardDestFile = new File(project.rootDir, "cronet-common${File.separator}consumer-proguard-rules.pro")
+    GFileUtils.deleteQuietly(commonProguardDestFile)
+    GFileUtils.copyFile(commonProguardSrcFile, commonProguardDestFile)
+    project.logger.error "copy proguard from ${commonProguardSrcFile} to ${commonProguardDestFile}"
+
+    File nativeProguardSrcFile = new File(preBuiltDir, "cronet_impl_native_proguard.cfg")
+    File nativeProguardDestFile = new File(project.rootDir, "cronet-native${File.separator}consumer-proguard-rules.pro")
+    GFileUtils.deleteQuietly(nativeProguardDestFile)
+    GFileUtils.copyFile(nativeProguardSrcFile, nativeProguardDestFile)
+    project.logger.error "copy proguard from ${nativeProguardSrcFile} to ${nativeProguardDestFile}"
+
+    File platformProguardSrcFile = new File(preBuiltDir, "cronet_impl_platform_proguard.cfg")
+    File platformProguardDestFile = new File(project.rootDir, "cronet-platform${File.separator}consumer-proguard-rules.pro")
+    GFileUtils.deleteQuietly(platformProguardDestFile)
+    GFileUtils.copyFile(platformProguardSrcFile, platformProguardDestFile)
+    project.logger.error "copy proguard from ${platformProguardSrcFile} to ${platformProguardDestFile}"
+
+    //==================================================res=========================================================
+
+    File apiResourcesSrcFile = new File(preBuiltDir, "res")
+    File apiResourcesDestFile = new File(project.rootDir, "cronet-api${File.separator}src${File.separator}main${File.separator}res")
+    GFileUtils.deleteQuietly(apiResourcesDestFile)
+    GFileUtils.copyDirectory(apiResourcesSrcFile, apiResourcesDestFile)
+    project.logger.error "copy res from ${apiResourcesSrcFile} to ${apiResourcesDestFile}"
+
+    //==================================================jniLibs=========================================================
+
+    File nativeLibsSrcFile = new File(preBuiltDir, "libs")
+    File nativeLibsDestFile = new File(project.rootDir, "cronet-native${File.separator}src${File.separator}main${File.separator}jniLibs")
+    GFileUtils.deleteQuietly(nativeLibsDestFile)
+    GFileUtils.copyDirectory(nativeLibsSrcFile, nativeLibsDestFile)
+    project.logger.error "copy libs from ${nativeLibsSrcFile} to ${nativeLibsDestFile}"
+
+    if (project.hasProperty("rewriteArmeabi") && project.getProperties().get("rewriteArmeabi").toBoolean()) {
+        File nativeLibsArmeabiDestFile = new File(project.rootDir, "cronet-native${File.separator}src${File.separator}main${File.separator}jniLibs${File.separator}armeabi")
+        File nativeLibsArmeabiV7ASrcFile = new File(project.rootDir, "cronet-native${File.separator}src${File.separator}main${File.separator}jniLibs${File.separator}armeabi-v7a")
+        GFileUtils.deleteQuietly(nativeLibsArmeabiDestFile)
+        GFileUtils.copyDirectory(nativeLibsArmeabiV7ASrcFile, nativeLibsArmeabiDestFile)
+        project.logger.error "rewrite armeabi with armeabi-v7a"
+
+    }
+
+    //==================================================version=========================================================
+    File versionSrcFile = new File(preBuiltDir, "VERSION")
+    Properties versionProperties = new Properties()
+    versionProperties.load(versionSrcFile.newDataInputStream())
+    String major = versionProperties.getProperty("MAJOR")
+    String minor = versionProperties.getProperty("MINOR")
+    String build = versionProperties.getProperty("BUILD")
+    String patch = versionProperties.getProperty("PATCH")
+
+    String cronetVersion = "${major}.${minor}.${build}.${patch}-SNAPSHOT"
+    project.logger.error "version ${cronetVersion}"
+
+    File apiPropertiesFile = new File(project.rootDir, "cronet-api${File.separator}gradle.properties")
+    File commonPropertiesFile = new File(project.rootDir, "cronet-common${File.separator}gradle.properties")
+    File nativePropertiesFile = new File(project.rootDir, "cronet-native${File.separator}gradle.properties")
+    File platformPropertiesFile = new File(project.rootDir, "cronet-platform${File.separator}gradle.properties")
+    File processorPropertiesFile = new File(project.rootDir, "cronet-processor${File.separator}gradle.properties")
+
+    writeProperties(apiPropertiesFile, "version", cronetVersion)
+    writeProperties(commonPropertiesFile, "version", cronetVersion)
+    writeProperties(nativePropertiesFile, "version", cronetVersion)
+    writeProperties(platformPropertiesFile, "version", cronetVersion)
+    writeProperties(processorPropertiesFile, "version", cronetVersion)
+
+}
+
+
+task releasePreBuiltFromSrc() {
+    setGroup("preBuilt")
+    doLast {
+        releaseFiles(true)
+    }
+}
+
+task releasePreBuiltFromJar() {
+    setGroup("preBuilt")
+    doLast {
+        releaseFiles(false)
+    }
+}
+
+
+task checkJava8() {
+    setGroup("preBuilt")
+    doLast {
+        File apiDestDir = new File(project.rootDir, "cronet-api${File.separator}src${File.separator}main${File.separator}java")
+        File commonDestDir = new File(project.rootDir, "cronet-common${File.separator}src${File.separator}main${File.separator}java")
+        File nativeDestDir = new File(project.rootDir, "cronet-native${File.separator}src${File.separator}main${File.separator}java")
+        File platformDestDir = new File(project.rootDir, "cronet-platform${File.separator}src${File.separator}main${File.separator}java")
+        File processorDestDir = new File(project.rootDir, "cronet-processor${File.separator}src${File.separator}main${File.separator}java")
+
+        List<File> checkDirList = Arrays.asList(apiDestDir, commonDestDir, nativeDestDir, platformDestDir, processorDestDir)
+
+        checkDirList.each { File dir ->
+            //noinspection UnnecessaryQualifiedReference
+            dir.eachFileRecurse(groovy.io.FileType.FILES) { File file ->
+                file.eachLine { String line ->
+                    if (line.contains("try (") && !line.trim().startsWith("*")) {
+                        //try with resource
+                        //要求不是注释行开头
+                        project.logger.error "file contains try with resource, please replease it. file path: ${file}"
+                        project.logger.error "${line}"
+                    } else if (line.contains("implements AutoCloseable")) {
+                        //AutoCloseable
+                        project.logger.error "file contains AutoCloseable, please replease it. file path: ${file}"
+                        project.logger.error "${line}"
+                    }
+
+                    //lambda在编译期可以检测出来，所有交由编译期处理
+                }
+            }
+        }
+
+    }
 }
