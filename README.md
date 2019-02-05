@@ -1,7 +1,7 @@
 cronet is a framework that using chromium net to send network request for android
 ====================================
 
-[ ![Download](https://api.bintray.com/packages/lizhangqu/maven/io.github.lizhangqu:cronet/images/download.svg) ](https://bintray.com/lizhangqu/maven/io.github.lizhangqu:cronet/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/lizhangqu/maven/io.github.lizhangqu:cronet-api/images/download.svg) ](https://bintray.com/lizhangqu/maven/io.github.lizhangqu:cronet/_latestVersion)
 
 Changelog
 ---------
