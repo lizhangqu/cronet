@@ -38,7 +38,6 @@ Usage
 	<groupId>io.github.lizhangqu</groupId>
 	<artifactId>cronet-native</artifactId>
 	<version>73.0.3653.0</version>
-	<type>pom</type>
 </dependency>
 ```
 
