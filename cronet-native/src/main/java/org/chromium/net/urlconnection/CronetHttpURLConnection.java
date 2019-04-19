@@ -25,6 +25,7 @@ import java.nio.ByteBuffer;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -668,21 +669,32 @@ public class CronetHttpURLConnection extends HttpURLConnection {
             return mResponseHeadersList;
         }
         mResponseHeadersList = new ArrayList<Map.Entry<String, String>>();
-        for (Map.Entry<String, String> entry : mResponseInfo.getAllHeadersAsList()) {
+        boolean removeContentLength = false;
+        List<Map.Entry<String, String>> allHeadersAsList = mResponseInfo.getAllHeadersAsList();
+        for (Map.Entry<String, String> entry : allHeadersAsList) {
             // Strips Content-Encoding response header. See crbug.com/592700.
-
             if (!entry.getKey().equalsIgnoreCase("Content-Encoding")) {
                 mResponseHeadersList.add(
                         new AbstractMap.SimpleImmutableEntry<String, String>(entry));
             } else {
-                if ("GLZip".equals(entry.getValue())) {
+                //support for weidian GLZip
+                if ("GLZip".equalsIgnoreCase(entry.getValue())) {
                     mResponseHeadersList.add(
                             new AbstractMap.SimpleImmutableEntry<String, String>(entry));
+                } else if (entry.getValue() != null && !"identity".equalsIgnoreCase(entry.getValue())) {
+                    removeContentLength = true;
                 }
             }
-
         }
-
+        if (removeContentLength) {
+            Iterator<Map.Entry<String, String>> iterator = mResponseHeadersList.iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, String> next = iterator.next();
+                if ("Content-Length".equalsIgnoreCase(next.getKey())) {
+                    iterator.remove();
+                }
+            }
+        }
         mResponseHeadersList = Collections.unmodifiableList(mResponseHeadersList);
         return mResponseHeadersList;
     }
