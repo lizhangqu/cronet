@@ -26,7 +26,6 @@ Feature
 
  - Full platform supports the latest version of TLS.
  - The platform supports the latest network protocols such as HTTP/2 and QUIC.
- - This Library compiled without FTP, WebSocket support, if you need to use you'd better compile it yourself.
 
 Usage
 -----
@@ -37,14 +36,14 @@ Usage
 <dependency>
 	<groupId>io.github.lizhangqu</groupId>
 	<artifactId>cronet-native</artifactId>
-	<version>73.0.3653.0</version>
+	<version>73.0.3653.0.1</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```
-compile 'io.github.lizhangqu:cronet-native:73.0.3653.0'
+compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.1'
 ```
 
 **NDK abiFilters**

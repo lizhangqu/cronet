@@ -11,3 +11,8 @@ version 73.0.3653.0
  - fix some bug
  - add dns interface
  - add some custom response headers such as route, protocol, tls 
+
+version 73.0.3653.0.1
+-------------
+
+ - Fix content-length error when content-encoding is set 
