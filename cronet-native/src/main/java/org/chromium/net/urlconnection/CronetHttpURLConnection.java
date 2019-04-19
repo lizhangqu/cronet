@@ -681,7 +681,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
                 if ("GLZip".equalsIgnoreCase(entry.getValue())) {
                     mResponseHeadersList.add(
                             new AbstractMap.SimpleImmutableEntry<String, String>(entry));
-                } else if (entry.getValue() != null && !"identity".equalsIgnoreCase(entry.getValue())) {
+                } else if (!"HEAD".equalsIgnoreCase(getRequestMethod()) && entry.getValue() != null && !"identity".equalsIgnoreCase(entry.getValue())) {
                     removeContentLength = true;
                 }
             }
