@@ -23,7 +23,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.3.0'
-        classpath 'io.github.lizhangqu:core-publish:1.3.9'
+        classpath 'io.github.lizhangqu:core-publish:1.4.0'
 //        classpath "net.ltgt.gradle:gradle-errorprone-plugin:0.7"
     }
     configurations.all {
@@ -363,7 +363,7 @@ task checkJava8() {
                         project.logger.error "${line}"
                     }
 
-                    //lambda在编译期可以检测出来，所有交由编译期处理
+                    //lambda在编译期可以检测出来，所以交由编译期处理
                 }
             }
         }
