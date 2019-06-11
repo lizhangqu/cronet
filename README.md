@@ -6,7 +6,7 @@ cronet is a framework that using chromium net to send network request for androi
 Changelog
 ---------
 
-Current version 73.0.3653.0 released on 5th Feb 2019.
+Current version 73.0.3653.1 released on 19th Apr 2019.
 
 See details in [CHANGELOG](https://github.com/lizhangqu/cronet/blob/master/CHANGELOG.md).
 
