@@ -54,6 +54,7 @@ public class ChromiumLibraryLoader extends CronetEngine.Builder.LibraryLoader {
             //以下逻辑为cronet加载，优先加载本地，否则从远程加载
             //首先调用系统行为进行加载
             System.loadLibrary(libName);
+            Log.w(TAG, "load from system");
         } catch (Throwable e) {
             //如果找不到，则从远程下载
             File dir = new File(context.getFilesDir(), "so_chromium");
