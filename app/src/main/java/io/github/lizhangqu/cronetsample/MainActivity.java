@@ -26,6 +26,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -104,6 +105,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private static void readInputStream(InputStream inputStream) {
+        if (inputStream != null) {
+            try {
+                byte[] buffer = new byte[1024];
+                int len = -1;
+                while ((len = inputStream.read(buffer)) != -1) {
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,24 +134,36 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         for (int i = 0; i < 10; i++) {
+                            InputStream inputStream = null;
                             try {
                                 HttpURLConnection urlConnection = (HttpURLConnection) mCronetEngine.openConnection(new URL("https://assets.geilicdn.com/res/d85eec90.so"));
                                 urlConnection.setDoInput(true);
                                 urlConnection.setDoOutput(true);
                                 urlConnection.setRequestMethod("HEAD");
                                 urlConnection.getOutputStream().write("a=b&b=c".getBytes());
-                                InputStream inputStream = urlConnection.getInputStream();
-                                Log.e("TAG", "inputStream:" + inputStream);
+                                inputStream = urlConnection.getInputStream();
+                                readInputStream(inputStream);
+                                Log.e(TAG, "inputStream:" + inputStream);
 
-                                Log.e("TAG", "getResponseCode:" + urlConnection.getResponseCode());
-                                Log.e("TAG", "getRequestMethod:" + urlConnection.getRequestMethod());
+                                Log.e(TAG, "getResponseCode:" + urlConnection.getResponseCode());
+                                Log.e(TAG, "getRequestMethod:" + urlConnection.getRequestMethod());
                                 Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
-                                Log.e("TAG", "headerFields:" + headerFields);
 
-                                //必须close，否则容易阻塞
-                                inputStream.close();
+                                Set<String> keys = headerFields.keySet();
+                                for (String key : keys) {
+                                    Log.e(TAG, key + "->" + headerFields.get(key));
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
+                            } finally {
+                                if (inputStream != null) {
+                                    try {
+                                        //必须close，否则容易阻塞
+                                        inputStream.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                             }
                         }
                     }
