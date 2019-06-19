@@ -137,18 +137,26 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < 10; i++) {
                             InputStream inputStream = null;
                             try {
-                                HttpURLConnection urlConnection = (HttpURLConnection) mCronetEngine.openConnection(new URL("https://www.baidu.com"));
+                                HttpURLConnection urlConnection = (HttpURLConnection) mCronetEngine.openConnection(new URL("https://si.geilicdn.com"));
                                 urlConnection.setDoInput(true);
                                 urlConnection.setDoOutput(true);
                                 urlConnection.setRequestMethod("HEAD");
                                 urlConnection.getOutputStream().write("a=b&b=c".getBytes());
-                                inputStream = urlConnection.getInputStream();
-                                readInputStream(inputStream);
-                                Log.e(TAG, "inputStream:" + inputStream);
+
 
                                 Log.e(TAG, "getResponseCode:" + urlConnection.getResponseCode());
                                 Log.e(TAG, "getRequestMethod:" + urlConnection.getRequestMethod());
                                 Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
+
+                                if (urlConnection.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
+                                    InputStream errorStream = urlConnection.getErrorStream();
+                                    readInputStream(errorStream);
+                                    Log.e(TAG, "errorStream:" + errorStream);
+                                } else {
+                                    inputStream = urlConnection.getInputStream();
+                                    readInputStream(inputStream);
+                                    Log.e(TAG, "inputStream:" + inputStream);
+                                }
 
                                 Set<String> keys = headerFields.keySet();
                                 for (String key : keys) {

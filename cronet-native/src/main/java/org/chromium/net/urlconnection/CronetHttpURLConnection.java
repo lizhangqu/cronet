@@ -187,6 +187,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         // IOException when we get a 400 and above.
 
 //        抛到上层去处理，切记需要将流读完，否则cronet部分回调不会回调
+//        如果此处不注释，那么在上层就需要判断状态码是否大于等于400，然后获取getErrorStream，将该流读完，否则cronet部分回调不会回调
 //        if (mResponseInfo.getHttpStatusCode() >= HTTP_BAD_REQUEST) {
 //            mRequest.cancel();
 //            throw new IOException("http code: " + mResponseInfo.getHttpStatusCode() + " url: " + url.toString());
