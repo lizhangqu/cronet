@@ -194,7 +194,8 @@ public class CronetHttpURLConnection extends HttpURLConnection {
 
         if ("HEAD".equalsIgnoreCase(method)) {
             //HEAD请求是不会返回响应体的，但是一旦业务方调用的时候没有调用read方法，则线程一直会阻塞，请求一多就会耗尽线程池
-            mRequest.cancel();
+            //mRequest.cancel(); //此处用read比cancel要好，如果用cancel，则cronet回调会不完整
+            getMoreData(ByteBuffer.allocateDirect(1));
         }
         return mInputStream;
     }
