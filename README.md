@@ -46,7 +46,7 @@ Usage
 compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.3'
 ```
 
-**Remote So**
+**Remote so**
 
 The cronet's so file is big, you can use remote mode to reduce the apk size by exclude cronet-so module.
 
@@ -147,7 +147,6 @@ android {
     }
 }
 ```
-**Remote So***
 
 **Create Engine**
 
