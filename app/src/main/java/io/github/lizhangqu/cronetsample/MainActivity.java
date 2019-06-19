@@ -239,15 +239,14 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "getRequestMethod:" + urlConnection.getRequestMethod());
             Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
 
-            if (urlConnection.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
-                InputStream errorStream = urlConnection.getErrorStream();
-                readInputStream(errorStream);
-                Log.e(TAG, "errorStream:" + errorStream);
-            } else {
+            try {
                 inputStream = urlConnection.getInputStream();
-                readInputStream(inputStream);
-                Log.e(TAG, "inputStream:" + inputStream);
+            } catch (IOException e) {
+                inputStream = urlConnection.getErrorStream();
             }
+            readInputStream(inputStream);
+
+            Log.e(TAG, "inputStream:" + inputStream);
 
             Set<String> keys = headerFields.keySet();
             for (String key : keys) {

@@ -13,6 +13,7 @@ import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.UrlRequest;
 import org.chromium.net.UrlResponseInfo;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -190,8 +191,22 @@ public class CronetHttpURLConnection extends HttpURLConnection {
 //        如果此处不注释，那么在上层就需要判断状态码是否大于等于400，然后获取getErrorStream，将该流读完，否则cronet部分回调不会回调
 //        if (mResponseInfo.getHttpStatusCode() >= HTTP_BAD_REQUEST) {
 //            mRequest.cancel();
-//            throw new IOException("http code: " + mResponseInfo.getHttpStatusCode() + " url: " + url.toString());
+//            throw new FileNotFoundException("http code: " + mResponseInfo.getHttpStatusCode() + " url: " + url.toString());
 //        }
+
+        //InputStream inputStream = null;
+        //try {
+        //    inputStream = connection.getInputStream();
+        //} catch (IOException e) {
+        //    inputStream = connection.getErrorStream();
+        //    if (inputStream == null) {
+        //        throw e;
+        //    }
+        //}
+
+        if (mResponseInfo.getHttpStatusCode() >= HTTP_BAD_REQUEST) {
+            throw new FileNotFoundException("http code: " + mResponseInfo.getHttpStatusCode() + " url: " + url.toString());
+        }
 
         if ("HEAD".equalsIgnoreCase(method)) {
             //HEAD请求是不会返回响应体的，但是一旦业务方调用的时候没有调用read方法，则线程一直会阻塞，请求一多就会耗尽线程池
@@ -354,7 +369,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
     }
 
     private final void setRequestPropertyInternal(String key, String value,
-            boolean overwrite) {
+                                                  boolean overwrite) {
         if (connected) {
             throw new IllegalStateException(
                     "Cannot modify request property after connection is made.");
@@ -368,7 +383,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
                 // of the same key, see crbug.com/432719 for more details.
                 throw new UnsupportedOperationException(
                         "Cannot add multiple headers of the same key, " + key
-                        + ". crbug.com/432719.");
+                                + ". crbug.com/432719.");
             }
         }
         // Adds the new header at the end of mRequestHeaders.
@@ -391,7 +406,7 @@ public class CronetHttpURLConnection extends HttpURLConnection {
             if (map.containsKey(entry.first)) {
                 // This should not happen due to setRequestPropertyInternal.
                 throw new IllegalStateException(
-                    "Should not have multiple values.");
+                        "Should not have multiple values.");
             } else {
                 List<String> values = new ArrayList<String>();
                 values.add(entry.second);

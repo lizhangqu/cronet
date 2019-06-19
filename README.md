@@ -6,7 +6,7 @@ cronet is a framework that using chromium net to send network request for androi
 Changelog
 ---------
 
-Current version 73.0.3653.3 released on 19th Jun 2019.
+Current version 73.0.3653.4 released on 19th Jun 2019.
 
 See details in [CHANGELOG](https://github.com/lizhangqu/cronet/blob/master/CHANGELOG.md).
 
@@ -36,14 +36,14 @@ Usage
 <dependency>
 	<groupId>io.github.lizhangqu</groupId>
 	<artifactId>cronet-native</artifactId>
-	<version>73.0.3653.0.3</version>
+	<version>73.0.3653.0.4</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```
-compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.3'
+compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.4'
 ```
 
 **Remote so**
@@ -227,6 +227,34 @@ try {
     return count;
  }
 
+```
+
+**Attentation Please**
+
+If you use the HttpURLConnection style api, you must read the inputstream anyway.
+
+```
+static void readInputStream(InputStream inputStream) {
+    if (inputStream != null) {
+        try {
+            byte[] buffer = new byte[1024];
+            int len = -1;
+            while ((len = inputStream.read(buffer)) != -1) {
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+InputStream inputStream = null;
+try {
+    inputStream = urlConnection.getInputStream();
+} catch (IOException e) {
+    inputStream = urlConnection.getErrorStream();
+}
+readInputStream(inputStream);
 ```
 
 

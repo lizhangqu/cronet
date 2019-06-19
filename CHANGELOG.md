@@ -17,7 +17,7 @@ version 73.0.3653.0.1
 
  - Fix content-length error when content-encoding is set 
 
-version 73.0.3653.0.2
+version 73.0.3653.0.4
 -------------
 
  - support remote so mode
