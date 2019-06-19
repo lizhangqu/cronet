@@ -22,10 +22,9 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * thor native loader extension
+ * native loader extension
  *
  * @author lizhangqu
  * @version V1.0
