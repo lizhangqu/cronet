@@ -6,7 +6,7 @@ cronet is a framework that using chromium net to send network request for androi
 Changelog
 ---------
 
-Current version 73.0.3653.1 released on 19th Apr 2019.
+Current version 73.0.3653.2 released on 19th Jun 2019.
 
 See details in [CHANGELOG](https://github.com/lizhangqu/cronet/blob/master/CHANGELOG.md).
 
@@ -36,14 +36,91 @@ Usage
 <dependency>
 	<groupId>io.github.lizhangqu</groupId>
 	<artifactId>cronet-native</artifactId>
-	<version>73.0.3653.0.1</version>
+	<version>73.0.3653.0.2</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```
-compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.1'
+compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.2'
+```
+
+**Remote So***
+
+The cronet's so file is big, you can use remote mode to reduce the apk size by exclude cronet-so module.
+
+```
+compile ('io.github.lizhangqu:cronet-native:73.0.3653.0.2'){
+    exclude group: 'io.github.lizhangqu', module: 'cronet-so'
+}
+```
+
+And add custom library loader when init cronet.
+
+```
+try {
+    CronetEngine.Builder myBuilder = new CronetEngine.Builder(this);
+    myBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_IN_MEMORY, 100 * 1024)
+            .setLibraryLoader(new ChromiumLibraryLoader(this)) //set library to such as ChromiumLibraryLoader impl
+            .enableHttp2(true)
+            .enableQuic(false);
+    Log.i(TAG, "setup");
+    CronetEngine cronetEngine = myBuilder.build();
+} catch (Throwable e) {
+
+}
+```
+
+You should use the httpurlconnection style api for downgrade
+
+```
+public HttpURLConnection createHttpURLConnection(CronetEngine cronetEngine String url) {
+    try {
+        return (HttpURLConnection) cronetEngine.openConnection(new URL(url));
+    } catch (Exception e) {
+        try {
+            return (HttpURLConnection) new URL(url).openConnection();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    return null;
+}
+
+
+private void sendHeadRequestByHurl() {
+    InputStream inputStream = null;
+    try {
+        HttpURLConnection urlConnection = createHttpURLConnection(cronetEngine, "url");
+        urlConnection.setDoInput(true);
+        urlConnection.setDoOutput(true);
+        urlConnection.setRequestMethod("HEAD");
+        urlConnection.getOutputStream().write("a=b&b=c".getBytes());
+    
+        Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
+    
+        if (urlConnection.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
+            InputStream errorStream = urlConnection.getErrorStream();
+            readInputStream(errorStream);
+        } else {
+            inputStream = urlConnection.getInputStream();
+            readInputStream(inputStream);
+           
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
 ```
 
 **NDK abiFilters**
@@ -70,6 +147,7 @@ android {
     }
 }
 ```
+**Remote So***
 
 **Create Engine**
 
