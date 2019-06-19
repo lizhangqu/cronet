@@ -130,13 +130,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.head).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         for (int i = 0; i < 10; i++) {
                             InputStream inputStream = null;
                             try {
-                                HttpURLConnection urlConnection = (HttpURLConnection) mCronetEngine.openConnection(new URL("https://assets.geilicdn.com/res/d85eec90.so"));
+                                HttpURLConnection urlConnection = (HttpURLConnection) mCronetEngine.openConnection(new URL("https://www.baidu.com"));
                                 urlConnection.setDoInput(true);
                                 urlConnection.setDoOutput(true);
                                 urlConnection.setRequestMethod("HEAD");
@@ -160,12 +161,13 @@ public class MainActivity extends AppCompatActivity {
                                     try {
                                         //必须close，否则容易阻塞
                                         inputStream.close();
-                                    } catch (IOException e) {
+                                    } catch (Exception e) {
                                         e.printStackTrace();
                                     }
                                 }
                             }
                         }
+
                     }
                 }).start();
 
@@ -180,21 +182,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.start_log).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startNetLog();
-            }
-        });
+        findViewById(R.id.start_log).
 
-        findViewById(R.id.stop_log).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopNetLog();
+                setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startNetLog();
+                    }
+                });
+
+        findViewById(R.id.stop_log).
+
+                setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        stopNetLog();
 
 
-            }
-        });
+                    }
+                });
 
         CronetEngine.Builder myBuilder = new CronetEngine.Builder(this);
         myBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_IN_MEMORY, 100 * 1024)
@@ -206,7 +212,6 @@ public class MainActivity extends AppCompatActivity {
 //                })
                 .enableHttp2(true)
                 .enableQuic(false);
-
         Log.i(TAG, "setup");
         mCronetEngine = myBuilder.build();
 
