@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
-apply from: project.rootProject.file('buildsystem/remove_build_config.gradle')
+//需要插入配置项，不移除BuildConfig
+//apply from: project.rootProject.file('buildsystem/remove_build_config.gradle')
 apply plugin: 'android.publish'
 
 android {
@@ -18,14 +19,28 @@ android {
     }
 
 
+    String remoteJson = null
+    try {
+        remoteJson = project.file('remote.json').text
+        remoteJson = remoteJson.replace("\"", "\\\"")
+    } catch (Exception e) {
+
+    }
     buildTypes {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (remoteJson != null && remoteJson.length() > 0) {
+                buildConfigField "String", "REMOTE_JSON", "\"${remoteJson}\""
+            }
+
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (remoteJson != null && remoteJson.length() > 0) {
+                buildConfigField "String", "REMOTE_JSON", "\"${remoteJson}\""
+            }
         }
     }
 
@@ -39,6 +54,7 @@ dependencies {
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation project(':cronet-api')
     implementation project(':cronet-common')
+    implementation project(':cronet-so')
 
     //apt
     annotationProcessor project(':cronet-processor')

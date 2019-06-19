@@ -281,7 +281,7 @@ void releaseFiles(boolean fromSrc) {
     //==================================================jniLibs=========================================================
 
     File nativeLibsSrcFile = new File(preBuiltDir, "libs")
-    File nativeLibsDestFile = new File(project.rootDir, "cronet-native${File.separator}src${File.separator}main${File.separator}jniLibs")
+    File nativeLibsDestFile = new File(project.rootDir, "cronet-so${File.separator}src${File.separator}main${File.separator}jniLibs")
     GFileUtils.deleteQuietly(nativeLibsDestFile)
     GFileUtils.copyDirectory(nativeLibsSrcFile, nativeLibsDestFile)
     project.logger.error "copy libs from ${nativeLibsSrcFile} to ${nativeLibsDestFile}"
@@ -295,6 +295,7 @@ void releaseFiles(boolean fromSrc) {
 
     }
 
+    uploadChromiumSo()
     //==================================================version=========================================================
     File versionSrcFile = new File(preBuiltDir, "VERSION")
     Properties versionProperties = new Properties()
@@ -321,6 +322,30 @@ void releaseFiles(boolean fromSrc) {
 
 }
 
+void uploadChromiumSo() {
+    File nativeLibsSrcFile = new File(project.rootDir, "cronet-so${File.separator}src${File.separator}main${File.separator}jniLibs")
+    Map<String, Map<String, String>> jsonMap = new HashMap<>()
+    //noinspection UnnecessaryQualifiedReference
+    nativeLibsSrcFile.eachFileRecurse(groovy.io.FileType.FILES) { File file ->
+        String fileMd5 = getMD5(file)
+        Map<String, String> result = uploadFile(file)
+        project.logger.error "${file.getParentFile().getName()} ${result}"
+        if (result == null || !result.get("md5").equalsIgnoreCase(fileMd5)) {
+            throw new Exception("文件上传失败")
+        }
+        jsonMap.put(file.getParentFile().getName(), result)
+    }
+
+    //noinspection UnnecessaryQualifiedReference
+    String json = new groovy.json.JsonOutput().toJson(jsonMap)
+    project.logger.error "json ${json}"
+    File nativeDestDir = new File(project.rootDir, "cronet-native")
+    File configFile = new File(nativeDestDir, "remote.json")
+    //noinspection UnnecessaryQualifiedReference
+    org.gradle.util.GFileUtils.deleteQuietly(configFile)
+    //noinspection UnnecessaryQualifiedReference
+    org.gradle.util.GFileUtils.writeFile("${json}", configFile)
+}
 
 task releasePreBuiltFromSrc() {
     setGroup("preBuilt")
@@ -333,6 +358,13 @@ task releasePreBuiltFromJar() {
     setGroup("preBuilt")
     doLast {
         releaseFiles(false)
+    }
+}
+
+task uploadSoToCDN() {
+    setGroup("preBuilt")
+    doLast {
+        uploadChromiumSo()
     }
 }
 
@@ -370,3 +402,79 @@ task checkJava8() {
 
     }
 }
+
+
+static String getMD5(File file) {
+    String md5 = file?.withInputStream {
+        //noinspection UnnecessaryQualifiedReference
+        new java.security.DigestInputStream(it, java.security.MessageDigest.getInstance('MD5')).withStream {
+            it.eachByte {}
+            it.messageDigest.digest().encodeHex() as String
+        }
+    }
+    return md5
+}
+
+static Map<String, String> uploadFile(File file) {
+    HttpURLConnection httpURLConnection = null
+    String BOUNDARY = "---------------------------" + UUID.randomUUID()
+    try {
+        URL url = new URL("https://repacedThisWithYourCDN")
+        httpURLConnection = (HttpURLConnection) url.openConnection()
+        httpURLConnection.setConnectTimeout(30000)
+        httpURLConnection.setReadTimeout(30000)
+        httpURLConnection.setDoOutput(true)
+        httpURLConnection.setDoInput(true)
+        httpURLConnection.setUseCaches(false)
+        httpURLConnection.setRequestMethod("POST")
+        httpURLConnection.setRequestProperty("Connection", "Keep-Alive")
+        httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.1; zh-CN; rv:1.9.2.6)")
+        httpURLConnection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY)
+
+        OutputStream out = new DataOutputStream(httpURLConnection.getOutputStream())
+
+        StringBuffer outBuffer = new StringBuffer();
+        outBuffer.append("\r\n").append("--").append(BOUNDARY).append("\r\n")
+        outBuffer.append("Content-Disposition: form-data; name=\"" + "file" + "\"; filename=\"" + "cronet-so" + "\"\r\n")
+        outBuffer.append("Content-Type: application/octet-stream\r\n\r\n")
+
+        out.write(outBuffer.toString().getBytes())
+
+        DataInputStream dis = new DataInputStream(new FileInputStream(file))
+        int bytes = 0
+        byte[] bufferOut = new byte[1024]
+        while ((bytes = dis.read(bufferOut)) != -1) {
+            out.write(bufferOut, 0, bytes)
+        }
+        dis.close()
+
+        byte[] endData = ("\r\n--" + BOUNDARY + "--\r\n").getBytes()
+        out.write(endData)
+        out.flush()
+        out.close()
+
+        StringBuffer inBuf = new StringBuffer()
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()))
+        String line = null
+        while ((line = reader.readLine()) != null) {
+            inBuf.append(line).append("\n")
+        }
+        String json = inBuf.toString()
+        //noinspection UnnecessaryQualifiedReference
+        def map = new groovy.json.JsonSlurper().parseText(json)
+        Map<String, String> result = new HashMap<>()
+        result.put("name", file.getName())
+        result.put("url", map.result)
+        result.put("md5", map.status.message?.split(":")[1])
+        return result
+    } catch (Exception e) {
+        e.printStackTrace()
+    } finally {
+        if (httpURLConnection != null) {
+            httpURLConnection.disconnect()
+        }
+    }
+    return null
+}
+

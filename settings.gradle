@@ -1,6 +1,7 @@
 include ':app'
 include ':cronet-api'
 include ':cronet-common'
+include ':cronet-so'
 include ':cronet-native'
 include ':cronet-platform'
 include ':cronet-processor'
