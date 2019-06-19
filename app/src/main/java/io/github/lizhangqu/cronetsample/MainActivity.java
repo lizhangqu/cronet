@@ -6,11 +6,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetException;
 import org.chromium.net.ExperimentalUrlRequest;
+import org.chromium.net.HostResolver;
 import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.UploadDataProviders;
 import org.chromium.net.UrlRequest;
@@ -20,10 +22,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -126,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
         mResultText = (TextView) findViewById(R.id.resultView);
         mReceiveDataText = (TextView) findViewById(R.id.dataView);
 
+        ensureCornetEngine();
 
         findViewById(R.id.head).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,45 +141,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         for (int i = 0; i < 10; i++) {
-                            InputStream inputStream = null;
-                            try {
-                                HttpURLConnection urlConnection = (HttpURLConnection) mCronetEngine.openConnection(new URL("https://si.geilicdn.com"));
-                                urlConnection.setDoInput(true);
-                                urlConnection.setDoOutput(true);
-                                urlConnection.setRequestMethod("HEAD");
-                                urlConnection.getOutputStream().write("a=b&b=c".getBytes());
-
-
-                                Log.e(TAG, "getResponseCode:" + urlConnection.getResponseCode());
-                                Log.e(TAG, "getRequestMethod:" + urlConnection.getRequestMethod());
-                                Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
-
-                                if (urlConnection.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
-                                    InputStream errorStream = urlConnection.getErrorStream();
-                                    readInputStream(errorStream);
-                                    Log.e(TAG, "errorStream:" + errorStream);
-                                } else {
-                                    inputStream = urlConnection.getInputStream();
-                                    readInputStream(inputStream);
-                                    Log.e(TAG, "inputStream:" + inputStream);
-                                }
-
-                                Set<String> keys = headerFields.keySet();
-                                for (String key : keys) {
-                                    Log.e(TAG, key + "->" + headerFields.get(key));
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            } finally {
-                                if (inputStream != null) {
-                                    try {
-                                        //必须close，否则容易阻塞
-                                        inputStream.close();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
+                            sendHeadRequestByHurl();
                         }
 
                     }
@@ -191,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.start_log).
-
                 setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -200,31 +167,104 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         findViewById(R.id.stop_log).
-
                 setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         stopNetLog();
-
-
                     }
                 });
 
-        CronetEngine.Builder myBuilder = new CronetEngine.Builder(this);
-        myBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_IN_MEMORY, 100 * 1024)
-//                .setHostResolver(hostname -> {
-//                    Log.e("HostResolver", "resolve:" + hostname);
-//                    List<InetAddress> inetAddresses = Arrays.asList(InetAddress.getAllByName(hostname));
-//                    Log.e("HostResolver", "inetAddresses:" + inetAddresses);
-//                    return inetAddresses;
-//                })
-                .enableHttp2(true)
-                .enableQuic(false);
-        Log.i(TAG, "setup");
-        mCronetEngine = myBuilder.build();
-
-
         startWithURL(mUrlEditorText.getText().toString(), "param={}");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 10; i++) {
+                    sendHeadRequestByHurl();
+                }
+
+            }
+        }).start();
+
+    }
+
+    private void ensureCornetEngine() {
+        try {
+            CronetEngine.Builder myBuilder = new CronetEngine.Builder(this);
+            myBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_IN_MEMORY, 100 * 1024)
+                    .setHostResolver(new HostResolver() {
+                        @Override
+                        public List<InetAddress> resolve(String hostname) throws UnknownHostException {
+                            Log.e(TAG, "resolve:" + hostname);
+                            List<InetAddress> inetAddresses = Arrays.asList(InetAddress.getAllByName(hostname));
+                            Log.e(TAG, "inetAddresses:" + inetAddresses);
+                            return inetAddresses;
+                        }
+                    })
+                    .setLibraryLoader(new ChromiumLibraryLoader(this))
+                    .enableHttp2(true)
+                    .enableQuic(false);
+            Log.i(TAG, "setup");
+            mCronetEngine = myBuilder.build();
+        } catch (Throwable e) {
+
+        }
+
+    }
+
+    private HttpURLConnection createHttpURLConnection(String url) {
+        ensureCornetEngine();
+        try {
+            return (HttpURLConnection) mCronetEngine.openConnection(new URL(url));
+        } catch (Exception e) {
+            try {
+                return (HttpURLConnection) new URL(url).openConnection();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private void sendHeadRequestByHurl() {
+        InputStream inputStream = null;
+        try {
+            HttpURLConnection urlConnection = createHttpURLConnection("https://si.geilicdn.com");
+            urlConnection.setDoInput(true);
+            urlConnection.setDoOutput(true);
+            urlConnection.setRequestMethod("HEAD");
+            urlConnection.getOutputStream().write("a=b&b=c".getBytes());
+
+
+            Log.e(TAG, "getResponseCode:" + urlConnection.getResponseCode());
+            Log.e(TAG, "getRequestMethod:" + urlConnection.getRequestMethod());
+            Map<String, List<String>> headerFields = urlConnection.getHeaderFields();
+
+            if (urlConnection.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
+                InputStream errorStream = urlConnection.getErrorStream();
+                readInputStream(errorStream);
+                Log.e(TAG, "errorStream:" + errorStream);
+            } else {
+                inputStream = urlConnection.getInputStream();
+                readInputStream(inputStream);
+                Log.e(TAG, "inputStream:" + inputStream);
+            }
+
+            Set<String> keys = headerFields.keySet();
+            for (String key : keys) {
+                Log.e(TAG, key + "->" + headerFields.get(key));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    //必须close，否则容易阻塞
+                    inputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 
@@ -250,6 +290,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startWithURL(String url, String postData) {
+        if (mCronetEngine == null) {
+            Toast.makeText(getApplicationContext(), "cronet未初始化完成", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Log.i(TAG, "Cronet started: " + url);
         mUrl = url;
 
