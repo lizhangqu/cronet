@@ -109,7 +109,7 @@ CronetURLStreamHandlerFactory cronetURLStreamHandlerFactory = new CronetURLStrea
 URL.setURLStreamHandlerFactory(cronetURLStreamHandlerFactory);
 ```
 
-And then you don't need to modify you java code like this.
+And then you don't need to modify your java code like this.
 
 ```
 try {
