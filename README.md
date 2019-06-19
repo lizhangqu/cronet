@@ -6,7 +6,7 @@ cronet is a framework that using chromium net to send network request for androi
 Changelog
 ---------
 
-Current version 73.0.3653.2 released on 19th Jun 2019.
+Current version 73.0.3653.3 released on 19th Jun 2019.
 
 See details in [CHANGELOG](https://github.com/lizhangqu/cronet/blob/master/CHANGELOG.md).
 
@@ -36,22 +36,22 @@ Usage
 <dependency>
 	<groupId>io.github.lizhangqu</groupId>
 	<artifactId>cronet-native</artifactId>
-	<version>73.0.3653.0.2</version>
+	<version>73.0.3653.0.3</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```
-compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.2'
+compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.3'
 ```
 
-**Remote So***
+**Remote So**
 
 The cronet's so file is big, you can use remote mode to reduce the apk size by exclude cronet-so module.
 
 ```
-compile ('io.github.lizhangqu:cronet-native:73.0.3653.0.2'){
+compile ('io.github.lizhangqu:cronet-native:73.0.3653.0.3'){
     exclude group: 'io.github.lizhangqu', module: 'cronet-so'
 }
 ```
