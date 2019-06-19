@@ -18,6 +18,7 @@ import org.chromium.net.UploadDataProviders;
 import org.chromium.net.UrlRequest;
 import org.chromium.net.UrlResponseInfo;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -211,6 +212,38 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private static ByteArrayInputStream toByteArrayInputStream(InputStream inputStream) {
+        if (inputStream != null) {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            try {
+                byte[] buffer = new byte[1024];
+                int len = -1;
+                while ((len = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, len);
+                }
+                return new ByteArrayInputStream(outputStream.toByteArray());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (outputStream != null) {
+                    try {
+                        outputStream.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private HttpURLConnection createHttpURLConnection(String url) {
         ensureCornetEngine();
         try {
@@ -242,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 inputStream = urlConnection.getInputStream();
             } catch (IOException e) {
-                inputStream = urlConnection.getErrorStream();
+                inputStream = toByteArrayInputStream(urlConnection.getErrorStream());
             }
             readInputStream(inputStream);
 

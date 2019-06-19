@@ -234,6 +234,38 @@ try {
 If you use the HttpURLConnection style api, you must read the inputstream anyway.
 
 ```
+static ByteArrayInputStream toByteArrayInputStream(InputStream inputStream) {
+    if (inputStream != null) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            byte[] buffer = new byte[1024];
+            int len = -1;
+            while ((len = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, len);
+            }
+            return new ByteArrayInputStream(outputStream.toByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    return null;
+}
+
 static void readInputStream(InputStream inputStream) {
     if (inputStream != null) {
         try {
@@ -252,8 +284,10 @@ InputStream inputStream = null;
 try {
     inputStream = urlConnection.getInputStream();
 } catch (IOException e) {
-    inputStream = urlConnection.getErrorStream();
+    inputStream = toByteArrayInputStream(urlConnection.getErrorStream());
 }
+
+//you must read the inputStream
 readInputStream(inputStream);
 ```
 
