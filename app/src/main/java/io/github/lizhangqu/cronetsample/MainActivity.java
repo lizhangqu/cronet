@@ -190,6 +190,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void ensureCornetEngine() {
         try {
+            if (mCronetEngine != null) {
+                return;
+            }
             CronetEngine.Builder myBuilder = new CronetEngine.Builder(this);
             myBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_IN_MEMORY, 100 * 1024)
                     .setHostResolver(new HostResolver() {

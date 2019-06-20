@@ -203,7 +203,6 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         //        throw e;
         //    }
         //}
-
         if (mResponseInfo.getHttpStatusCode() >= HTTP_BAD_REQUEST) {
             throw new FileNotFoundException("http code: " + mResponseInfo.getHttpStatusCode() + " url: " + url.toString());
         }
@@ -690,7 +689,12 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         List<Map.Entry<String, String>> allHeadersAsList = mResponseInfo.getAllHeadersAsList();
         for (Map.Entry<String, String> entry : allHeadersAsList) {
             // Strips Content-Encoding response header. See crbug.com/592700.
-            if (!entry.getKey().equalsIgnoreCase("Content-Encoding")) {
+            if (entry.getKey().equalsIgnoreCase("x-tls-cipher-suite")) {
+                //转换tls-cipher-suite的number为可读字符串
+                String tlsCipherSuiteName = TLSCipherSuite.getTLSCipherSuiteName(entry.getValue());
+                mResponseHeadersList.add(
+                        new AbstractMap.SimpleImmutableEntry<String, String>(entry.getKey(), tlsCipherSuiteName));
+            } else if (!entry.getKey().equalsIgnoreCase("Content-Encoding")) {
                 mResponseHeadersList.add(
                         new AbstractMap.SimpleImmutableEntry<String, String>(entry));
             } else {
