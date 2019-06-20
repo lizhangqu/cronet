@@ -6,7 +6,7 @@ cronet is a framework that using chromium net to send network request for androi
 Changelog
 ---------
 
-Current version 73.0.3653.4 released on 19th Jun 2019.
+Current version 73.0.3653.5 released on 20th Jun 2019.
 
 See details in [CHANGELOG](https://github.com/lizhangqu/cronet/blob/master/CHANGELOG.md).
 
@@ -36,14 +36,14 @@ Usage
 <dependency>
 	<groupId>io.github.lizhangqu</groupId>
 	<artifactId>cronet-native</artifactId>
-	<version>73.0.3653.0.4</version>
+	<version>73.0.3653.0.5</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```
-compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.4'
+compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.5'
 ```
 
 **Remote so**

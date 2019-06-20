@@ -21,3 +21,8 @@ version 73.0.3653.0.4
 -------------
 
  - support remote so mode
+
+version 73.0.3653.0.5
+-------------
+
+ - convert to readable tls cipher suite
