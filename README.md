@@ -36,14 +36,14 @@ Usage
 <dependency>
 	<groupId>io.github.lizhangqu</groupId>
 	<artifactId>cronet-native</artifactId>
-	<version>73.0.3653.0.5</version>
+	<version>73.0.3653.0.6</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```
-compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.5'
+compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.6'
 ```
 
 **Remote so**
@@ -51,7 +51,7 @@ compile 'io.github.lizhangqu:cronet-native:73.0.3653.0.5'
 The cronet's so file is big, you can use remote mode to reduce the apk size by exclude cronet-so module.
 
 ```
-compile ('io.github.lizhangqu:cronet-native:73.0.3653.0.3'){
+compile ('io.github.lizhangqu:cronet-native:73.0.3653.0.6'){
     exclude group: 'io.github.lizhangqu', module: 'cronet-so'
 }
 ```

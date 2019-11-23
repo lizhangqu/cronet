@@ -26,3 +26,8 @@ version 73.0.3653.0.5
 -------------
 
  - convert to readable tls cipher suite
+
+version 73.0.3653.0.6
+-------------
+
+ - support add referer request header
