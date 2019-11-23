@@ -15,25 +15,31 @@
         android:id="@+id/start_request"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="开始请求(cronet api)" />
+        android:text="开始请求" />
 
     <Button
         android:id="@+id/start_log"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="开始记录日志(cronet api)" />
+        android:text="开始记录日志" />
 
     <Button
         android:id="@+id/stop_log"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="结束记录日志(cronet api)" />
+        android:text="结束记录日志" />
 
     <Button
         android:id="@+id/head"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="HEAD请求(httpurlconnection api)" />
+        android:text="HEAD请求" />
+
+    <Button
+        android:id="@+id/quic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="QUIC" />
 
     <TextView
         android:id="@+id/resultView"

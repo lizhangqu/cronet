@@ -327,6 +327,9 @@ void uploadChromiumSo() {
     Map<String, Map<String, String>> jsonMap = new HashMap<>()
     //noinspection UnnecessaryQualifiedReference
     nativeLibsSrcFile.eachFileRecurse(groovy.io.FileType.FILES) { File file ->
+        if (!file.name.endsWith(".so")) {
+            return;
+        }
         String fileMd5 = getMD5(file)
         Map<String, String> result = uploadFile(file)
         project.logger.error "${file.getParentFile().getName()} ${result}"
@@ -442,7 +445,7 @@ static Map<String, String> uploadFile(File file) {
 
         DataInputStream dis = new DataInputStream(new FileInputStream(file))
         int bytes = 0
-        byte[] bufferOut = new byte[1024]
+        byte[] bufferOut = new byte[10240]
         while ((bytes = dis.read(bufferOut)) != -1) {
             out.write(bufferOut, 0, bytes)
         }
